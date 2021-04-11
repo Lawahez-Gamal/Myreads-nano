@@ -20,16 +20,17 @@ class SearchBook extends Component{
 
         if(data){
             // if(!data){
-                console.log(data)
+                console.log([data])
             
                 data = [data].map((book) => {
-                    const booksInShelfs = this.props.books.find((myBook) => myBook.id === book.id);
+                    const booksInShelfs = this.props.books.find((myBook) => myBook.id=== book.id);
                     if(booksInShelfs){
                         book.shelf = booksInShelfs.shelf
                     }
+                   
                     return book;
                 })
-                this.setState({ searchedBooks : 'results',showSearchBookPage : data})
+                this.setState({ searchedBooks : 'search-books-results',showSearchBookPage : data})
               
         // }
         }
@@ -71,9 +72,9 @@ class SearchBook extends Component{
                     )}
 
                   
-                    {searchedBooks === 'results' && (
-                   showSearchBookPage.map((book) => (
-                       <BooksControl key={book.id} book={book} shelfUpdate={shelfUpdate} />
+                    {searchedBooks === 'search-books-results' && (
+                   showSearchBookPage.map((book,i) => (
+                       <BooksControl key={book.id +i} book={book} shelfUpdate={shelfUpdate} />
                    ))      
                     )}
                  </ol>

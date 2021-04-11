@@ -30,7 +30,7 @@ class ListBooks extends Component {
                 <BooksShelf 
                 books = { books.filter((book) => book.shelf === 'wantToRead' ) }
                 shelfUpdate = { shelfUpdate }
-                />
+                 />
 
                 <h2 className="bookshelf-title">Read</h2>
 

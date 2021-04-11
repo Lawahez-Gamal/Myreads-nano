@@ -23,6 +23,7 @@ class BooksControl extends Component{
          <div className="book">
 
         <div className="book-top">
+            
         <li key={book.id}>
          {book.imageLinks && (
             <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url(' + book.imageLinks.thumbnail + ')' }}></div>
