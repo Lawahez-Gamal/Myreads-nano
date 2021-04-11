@@ -1,35 +1,53 @@
 import React,{Component} from 'react';
-import BooksControl from './BooksControl';
+import BooksShelf from './BooksShelf';
+
+import { Link } from 'react-router-dom';
 
 class ListBooks extends Component {
 
     render() {
-        const { book } = this.props;
-
-        
-
-        const author = book.authors ? book.authors : "Unknown Author";
+        const { books, shelfUpdate } = this.props;
 
         return (
-            <div className="book">
+            <div className="list-books">
+               <div className="list-books-title">
+                <h1>My Reads</h1>
+              </div>
 
-                <div className="book-top">
+                <div className="list-books-content">
+                    <div >
 
-                    <div className="book-cover" style={{ width: 128, height: 193 }}></div>
+                    <div className="bookshelf">
+				    <h2 className="bookshelf-title">Currently Reading</h2>
 
-                    <BooksControl 
-                    shelfUpdate = { this.props.shelfUpdate }
-                    book = { book }
-                    books = { this.props.books }
-
-                    controlCheck = { this.props.controlCheck }
+                    <BooksShelf 
+                    books = { books.filter((book) => book.shelf === 'currentlyReading' ) }
+                    shelfUpdate = { shelfUpdate }
                     />
+
+                    <h2 className="bookshelf-title">Want To Read</h2>
+
+                <BooksShelf 
+                books = { books.filter((book) => book.shelf === 'wantToRead' ) }
+                shelfUpdate = { shelfUpdate }
+                />
+
+                <h2 className="bookshelf-title">Read</h2>
+
+                <BooksShelf 
+                books = { books.filter((book) => book.shelf === 'read' ) }
+                shelfUpdate = { shelfUpdate }
+                />
+
                 </div>
-
-                <div className="book-title">{book.title}</div>
-
-                <div className="book-authors">{author}</div>
             </div>
+            </div>
+
+            <div className="open-search">
+              <Link to="/search">Add a book</Link>
+            </div>
+          </div>
+          
         )
     }
 }
