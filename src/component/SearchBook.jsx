@@ -1,87 +1,57 @@
-import React,{Component} from 'react';
-import BooksControl from './BooksControl';
-import { Link } from 'react-router-dom';
-
+import React, {Component} from 'react';
+import {Link} from 'react-router-dom';
 import * as BooksAPI from '../BooksAPI';
+import BooksControl from './BooksControl';
 
-class SearchBook extends Component{
-
-    state = {
+class SearchBook extends Component {
+   
+            state = {
+                searchedBooks: []
+            }
     
-        searchedBooks:[],
-        showSearchBookPage :[],
-       
-      }
-
-    Queryupdate = (query) => {
-    if (query) {
-        this.setState({searchedBooks : 'searching'})
-      BooksAPI.search(query).then((data)  => {
-
-        if(data){
-            // if(!data){
-                console.log([data])
-            
-                data = [data].map((book) => {
-                    const booksInShelfs = this.props.books.find((myBook) => myBook.id=== book.id);
-                    if(booksInShelfs){
-                        book.shelf = booksInShelfs.shelf
+        QueryUpdate = (e) => {
+            const query = e.target.value;
+            if (!query) {
+                this.setState({searchedBooks: []});
+                return "No result";
+            }
+            BooksAPI.search(query).then(searchedBooks => {
+                console.log(query);
+                if (searchedBooks.error) {
+                    searchedBooks = [];
+                }
+                searchedBooks = searchedBooks.map((book) => {
+                    const bookInShelf = this.props.books.find(b => b.id === book.id);
+                    if (bookInShelf) {
+                        book.shelf = bookInShelf.shelf;
                     }
-                   
                     return book;
-                })
-                this.setState({ searchedBooks : 'search-books-results',showSearchBookPage : data})
-              
-        // }
+                });
+                this.setState({searchedBooks});
+            });
+        };
+    
+        render() {
+            return (
+                <div className="search-books">
+                    <div className="search-books-bar">
+                        <Link className="close-search" to="/">Close Page</Link>
+                        <div className="search-books-input-wrapper">
+                            <input type="text" placeholder="Search by title or author" onChange={this.QueryUpdate}/>
+                        </div>
+                    </div>
+                    <div className="search-books-results">
+                        <ol className="books-grid">
+                            {this.state.searchedBooks && this.state.searchedBooks.map(book => (
+                                <li key={book.id}>
+                                    <BooksControl book={book} ShelfUpdate={this.props.ShelfUpdate}/>
+                                </li>
+                            ))}
+                        </ol>
+                    </div>
+                </div>
+            );
         }
-    })
-  }
-  else{
-      this.setState({ searchedBooks : 'No Results', showSearchBookPage : []})
-  }
- }
-
-    render() {
-        const { shelfUpdate } = this.props;
-
-        const { searchedBooks, showSearchBookPage } = this.state;
-
-        return (
-            <div className="search-books"> 
-             
-             <div className="search-books-bar">
-
-                 <Link className="close-search" to="/"> Close Page</Link>
-
-                  <div className="search-books-input-wrapper">
-
-                      <input type="text" placeholder="search by title or author" onChange = { (e) => this.Queryupdate(e.target.value)} />
-                  </div>
-             </div>
-
-             <div className="search-books-results">
-                 <ol className="books-grid" >
-                
-                 {searchedBooks === 'searching' && (
-                    <div className="search-books-results-msg">Searching</div>       
-                    )}
-
-  
-                   {searchedBooks === 'No Results' && (
-                    <div className="search-books-results-msg">No result</div>       
-                    )}
-
-                  
-                    {searchedBooks === 'search-books-results' && (
-                   showSearchBookPage.map((book,i) => (
-                       <BooksControl key={book.id +i} book={book} shelfUpdate={shelfUpdate} />
-                   ))      
-                    )}
-                 </ol>
-             </div>
-            </div>
-        )
     }
-}
 
 export default SearchBook

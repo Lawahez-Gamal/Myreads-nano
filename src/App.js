@@ -1,73 +1,78 @@
-import React from 'react'
+import React,{Component} from 'react'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
+import ListBooks from "./component/ListBooks";
+import SearchBook from "./component/SearchBook";
+import {Route} from 'react-router-dom';
 
+class BooksApp extends Component {
+ 
+      state = {
+          books: [],
+          loading: true,
+      }
 
-import ListBooks from './component/ListBooks';
-import SearchBook from './component/SearchBook';
-import { Route} from 'react-router-dom';
-
-class BooksApp extends React.Component {
-  state = {
-    
-    books:[],
-     
-  }
 
   componentDidMount() {
-    BooksAPI.getAll().then( books => {
-      // console.log(books);
-      this.setState({
-        books
+      BooksAPI.getAll().then(books => {
+          this.setState({books: books, loading: false})
       })
-    })
   }
 
-  shelfUpdate = (addedbook, shelf) => {
-    addedbook.shelf = shelf
-    console.log(this.state.books)
-
-    if(this.state.books.indexOf(addedbook) < 0){
-      this.state.books.push(addedbook)
-    }
-
-    BooksAPI.update(addedbook, shelf).then( () => {
-      
-   this.setState((prevState )=> {
-     return {
-       books :prevState.books.map((book) => book.id === addedbook.id ? addedbook:book)
-     }
-   })
-
-  })
-  }
+  ShelfUpdate = (book, shelf) => {
+      BooksAPI.update(book, shelf)
+          .then(
+              this.setState((state) => ({
+                  books: state.books.map(bo => {
+                      if (bo.title === book.title) {
+                          bo.shelf = shelf;
+                          return bo
+                      } else {
+                          return bo
+                      }
+                  }),
+                  loading: false
+              }))
+          )
+  };
 
   render() {
-    return (
-      <div className="app">
-        <Route exact path="/" render={ () => (
-         
-                     
-                <ListBooks
-                  books={this.state.books}
-                  shelfUpdate={this.shelfUpdate}
-                />
-                )} />         
-            
-        <Route path="/search" render={ () => (
-          <SearchBook
-            books ={this.state.books }
-           
-            shelfUpdate={this.shelfUpdate}
-          />
-        )}
-        />
+      const state = this.state;
+      const currentlyReading = state.books.filter((book) => book.shelf === 'currentlyReading')
+      const wantToRead = state.books.filter((book) => book.shelf === 'wantToRead')
+      const read = state.books.filter((book) => book.shelf === 'read')
 
-        
-        </div>
-    )
+      return (
+          <div className="app">
+              <Route path="/" exact render={() => (
+                  <div>
+                      <div className="list-books-title">
+                          <h1>My Reads</h1>
+                      </div>
+                      {
+                          !state.loading ? (
+                              <ListBooks
+                                  currentlyReading={currentlyReading}
+                                  wantToRead={wantToRead}
+                                  read={read}
+                                  ShelfUpdate={this.ShelfUpdate}
+                              />
+                          ) : (
+                              <div className="loader"/>
+                          )
+                      }
+                  </div>
+              )}/>
+              <Route path="/search" render={({history}) => (
+                  <SearchBook
+                      ShelfUpdate={this.ShelfUpdate}
+                      history={history}
+                      books={currentlyReading.concat(wantToRead, read)}
+                  />
+              )}/>
+          </div>
+      )
   }
 }
-
 
 export default BooksApp
