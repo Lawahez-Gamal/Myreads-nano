@@ -21,7 +21,7 @@ class SearchBook extends Component {
                     searchedBooks = [];
                 }
                 searchedBooks = searchedBooks.map((book) => {
-                    const bookInShelf = this.props.books.find(b => b.id === book.id);
+                    const bookInShelf = this.props.books.find(mybook => mybook.id === book.id);
                     if (bookInShelf) {
                         book.shelf = bookInShelf.shelf;
                     }

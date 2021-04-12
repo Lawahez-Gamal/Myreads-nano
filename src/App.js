@@ -23,12 +23,12 @@ class BooksApp extends Component {
       BooksAPI.update(book, shelf)
           .then(
               this.setState((state) => ({
-                  books: state.books.map(bo => {
-                      if (bo.title === book.title) {
-                          bo.shelf = shelf;
-                          return bo
+                  books: state.books.map(mybook => {
+                      if (mybook.title === book.title) {
+                          mybook.shelf = shelf;
+                          return mybook
                       } else {
-                          return bo
+                          return mybook
                       }
                   }),
                   loading: false
